@@ -1,7 +1,6 @@
 // Import types from CitizenFX
 /// <reference types="@citizenfx/client" />
 
-// We only need to define our custom interfaces
 interface SpawnConfig {
   x: number;
   y: number;
@@ -17,7 +16,6 @@ interface ChatMessage {
 const SPAWN_POS: [number, number, number] = [-2072.689, -361.769, 12.0];
 const SPAWN_HEADING: number = 89.84;
 
-// Try multiple events to see which ones fire
 AddEventHandler('onClientResourceStart', (resourceName: string): void => {
     if (GetCurrentResourceName() !== resourceName) return;
     InitializeSpawn();
@@ -69,6 +67,7 @@ async function GiveCar(): Promise<void> {
     // Create a vehicle at the player's position
     const vehicle: number = CreateVehicle(hash, coords[0], coords[1], coords[2], GetEntityHeading(ped), true, false);
     SetVehicleNumberPlateText(vehicle, "SPEED");
+    SetVehicleModKit(vehicle, 0);
     SetVehicleMod(vehicle, 17, 1, false);
     FullyChargeNitrous(vehicle);
     SetVehicleUseHornButtonForNitrous(vehicle, true);

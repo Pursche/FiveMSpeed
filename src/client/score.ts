@@ -11,6 +11,8 @@ let _speedTriggered: boolean = false;
 let _gameOver: boolean = false;
 let _score: number = 0;
 let _notifications: Notification[] = [];
+let _nitroEnabled : boolean = false;
+let _soundId: number | null = null;
 const MAX_NOTIFICATIONS: number = 5;
 
 on("roadrage:SetSpeedTriggered", (): void => {
@@ -42,6 +44,11 @@ on("roadrage:AddScore", (score: number, name: string | null, seconds: number | n
 });
 
 setTick((): void => {
+    // Ensure the particle asset is loaded
+    if (!HasNamedPtfxAssetLoaded("veh_xs_vehicle_mods")) {
+        RequestNamedPtfxAsset("veh_xs_vehicle_mods");
+    }
+
     HandleNotifications();
     if (_gameOver) {
         DrawGameOver();
@@ -67,12 +74,23 @@ function HandleNotifications(): void {
     const playerPed = PlayerPedId();
     const vehicle = GetVehiclePedIsIn(playerPed, false);
     if (boost > 1.0) {
-        SetVehicleNitroEnabled(vehicle, true);
+        if (!_nitroEnabled) {
+            SetVehicleNitroEnabled(vehicle, true);
+            StartScreenEffect("TinyRacerIntroCam", 0, true);
+            _soundId = GetSoundId();
+            PlaySoundFromEntity(_soundId, "Woosh_01", vehicle, "FBI_HEIST_ELEVATOR_SHAFT_DEBRIS_SOUNDS", false, 0);
+            _nitroEnabled = true;
+        }
         SetVehicleCheatPowerIncrease(vehicle, boost);
-    }
-    else
-    {
-        SetVehicleNitroEnabled(vehicle, false);
+        
+    } else {
+        if (_nitroEnabled) {
+            SetVehicleNitroEnabled(vehicle, false);
+            StopScreenEffect("TinyRacerIntroCam");
+            StopSound(_soundId);
+            ReleaseSoundId(_soundId);
+            _nitroEnabled = false;
+        }
     }
 }
 

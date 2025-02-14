@@ -14,7 +14,7 @@ const XP_TABLE: number[] = [
 ];
 
 const CARS: string[] = [
-    "ZR350",
+    "Mesa",
     "Panto",
     "Habanero",
     "Stratum",
@@ -38,7 +38,6 @@ setTick((): void => {
 });
 
 function SetLevelStyle(): void {
-    // Set the text style
     SetTextFont(0);
     SetTextScale(0.7, 0.7);
     SetTextColour(255, 255, 255, 255);

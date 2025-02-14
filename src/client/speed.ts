@@ -23,16 +23,16 @@ const ANIMAL_HIT_COOLDOWN: number = 1000;
 const NEAR_MISS_SCORE: number = 250;
 const MOTORCYCLE_HIT_SCORE: number = 500;
 const OBJECT_HIT_SCORE: number = 10;
-const HUMAN_HIT_SCORE: number = 750;
-const ANIMAL_HIT_SCORE: number = 300;
+const HUMAN_HIT_SCORE: number = 500;
+const ANIMAL_HIT_SCORE: number = 1000;
 const OPPOSITE_DIRECTION_MULTIPLIER: number = 1.5;
 
 const NEAR_MISS_LABEL: string = "Near Miss";
 const NEAR_MISS_OPPOSITE_LABEL: string = "Near Miss (Opposite)";
 const MOTORCYCLE_HIT_LABEL: string = "Motorcycle Hit";
 const OBJECT_HIT_LABEL: string = "Object Hit";
-const HUMAN_HIT_LABEL: string = "Human Hit";
-const ANIMAL_HIT_LABEL: string = "Animal Hit";
+const HUMAN_HIT_LABEL: string = "FATALITY";
+const ANIMAL_HIT_LABEL: string = "Monster!";
 
 let _nearMisses: NearMissRecord[] = [];
 let _nearMissCooldown: Map<number, number> = new Map();
@@ -147,7 +147,7 @@ function HandleCollisions(playerVehicle: number): void {
 
     const vehicles: number[] = GetGamePool("CVehicle");
     HandleMotorcycleHits(playerVehicle, vehicles);
-    Handle_nearMisses(playerVehicle, vehicles);
+    HandleNearMisses(playerVehicle, vehicles);
 
     const objects: number[] = GetGamePool("CObject");
     HandleObjectHits(playerVehicle, objects);
@@ -173,7 +173,7 @@ function HandleMotorcycleHits(playerVehicle: number, vehicles: number[]): void {
     }
 }
 
-function Handle_nearMisses(playerVehicle: number, vehicles: number[]): void {
+function HandleNearMisses(playerVehicle: number, vehicles: number[]): void {
     const playerCoords: number[] = GetEntityCoords(playerVehicle);
     const currentTime: number = GetGameTimer();
 
@@ -242,6 +242,9 @@ function HandlePedHits(playerVehicle: number, peds: number[]): void {
     for (const ped of peds) {
         // Skip the player's own ped.
         if (ped === playerPed) continue;
+
+        // Skip peds that are in a vehicle.
+        if (IsPedInAnyVehicle(ped, false)) continue;
 
         if (IsEntityTouchingEntity(playerVehicle, ped)) {
             // Determine ped type using GetPedType.
